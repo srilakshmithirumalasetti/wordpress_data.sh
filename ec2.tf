@@ -2,10 +2,22 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Define a security group for WordPress
-resource "aws_security_group" "wordpress_sg" {
-  name        = "wordpress-sg"
-  description = "Allow HTTP, HTTPS, SSH, and MySQL traffic"
+resource "aws_instance" "my_instance" {
+  ami                   ="ami-0166fe664262f664c"
+  instance_type          = "t2.micro"
+  count                  = 1
+  key_name               = "spandana"
+  associate_public_ip_address = true
+  user_data              = file("data.sh")
+  subnet_id = "subnet-0c85ac199c0740b9f"
+  tags = {
+    Name = "WordPressServer"
+  }
+}
+
+resource "aws_security_group" "demosg" {
+  name        = "demosg"
+  description = "Security group for WordPress and MySQL"
 
   ingress {
     from_port   = 80
@@ -13,19 +25,11 @@ resource "aws_security_group" "wordpress_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  ingress{
+    from_port=443
+    to_port=443
+    protocol="tcp"
+    cidr_blocks=["0.0.0.0/0"]
   }
 
   ingress {
@@ -34,6 +38,13 @@ resource "aws_security_group" "wordpress_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress{
+   from_port=22
+   to_port=22
+   protocol="tcp"
+   cidr_blocks=["0.0.0.0/0"]
+  }
+
 
   egress {
     from_port   = 0
@@ -42,19 +53,3 @@ resource "aws_security_group" "wordpress_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-# Create an EC2 instance for WordPress
-resource "aws_instance" "wordpress" {
-  ami           = "ami-0166fe664262f664c"
-  instance_type = "t2.micro"
-  key_name      = "spandana"              
-  subnet_id     = "subnet-0c85ac199c0740b9f"            
-  security_groups = [aws_security_group.wordpress_sg.id]
-
-  user_data = file("data.sh")            
-
-  tags = {
-    Name = "WordPressServer"
-  }
-}
-
