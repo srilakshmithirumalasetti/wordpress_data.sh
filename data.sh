@@ -44,7 +44,7 @@ chmod 644 /home/ec2-user/docker-compose.yml
 cd /home/ec2-user
 docker-compose up -d
 docker ps
-TERRAFORM_VERSION="1.5.4" # Change the version as needed
+TERRAFORM_VERSION="1.5.4" # Adjust to the desired version
 curl -LO "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
-unzip terraform_${TERRAFORM_VERSION)_linux_amd64.zip
+unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 sudo mv terraform /usr/local/bin
